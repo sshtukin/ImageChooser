@@ -15,14 +15,9 @@ import android.net.Uri
 
 class MainActivity : AppCompatActivity() {
 
-    private companion object {
-        private val GALLERY_REQUEST_CODE = 1001
-        private val URI_KEY = "1002"
-        private val IMAGE_INTENT_TYPE = "image/*"
-        private var savedUri : Uri? = Uri.EMPTY
-    }
+    private var savedUri : Uri = Uri.EMPTY
 
-    private fun setImage(uri: Uri?){
+    private fun setImage(uri: Uri){
         savedUri = uri
         ivChosenImage.setImageURI(savedUri)
     }
@@ -37,20 +32,26 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
-        setImage(savedInstanceState?.getParcelable(URI_KEY))
+        setImage(savedInstanceState?.getParcelable(URI_KEY)?:Uri.EMPTY)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            setImage(data?.data)
+            data?.data?.let{
+                setImage(it)
+            }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
-        if (savedUri != Uri.EMPTY) {
-            outState?.putParcelable(URI_KEY, savedUri)
-        }
+        outState?.putParcelable(URI_KEY, savedUri)
         super.onSaveInstanceState(outState)
+    }
+
+    private companion object {
+        private val GALLERY_REQUEST_CODE = 1001
+        private val URI_KEY = "1002"
+        private val IMAGE_INTENT_TYPE = "image/*"
     }
 }
