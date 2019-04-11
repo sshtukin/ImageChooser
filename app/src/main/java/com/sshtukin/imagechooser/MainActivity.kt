@@ -7,22 +7,31 @@ import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
 import android.net.Uri
 
+/**
+ * Activity which loads image from gallery and sets in [ivChosenImage] by pressing [btnOpenGallery]
+ *
+ * @author Sergey Shtukin
+ */
 
 class MainActivity : AppCompatActivity() {
-    val GALLERY_REQUEST_CODE = 1001
-    val URI_KEY = "1002"
-    var saved_uri : Uri? = null
 
-    fun setImage(uri: Uri?){
-        saved_uri = uri
-        ivChosenImage.setImageURI(saved_uri)
+    private companion object {
+        private val GALLERY_REQUEST_CODE = 1001
+        private val URI_KEY = "1002"
+        private val IMAGE_INTENT_TYPE = "image/*"
+        private var savedUri : Uri? = Uri.EMPTY
+    }
+
+    private fun setImage(uri: Uri?){
+        savedUri = uri
+        ivChosenImage.setImageURI(savedUri)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         btnOpenGallery.setOnClickListener {
-              startActivityForResult(Intent(Intent.ACTION_PICK).setType("image/*"), GALLERY_REQUEST_CODE)
+              startActivityForResult(Intent(Intent.ACTION_PICK).setType(IMAGE_INTENT_TYPE), GALLERY_REQUEST_CODE)
         }
     }
 
@@ -33,11 +42,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK) setImage(data?.data)
+        if (requestCode == GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            setImage(data?.data)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.putParcelable(URI_KEY, saved_uri)
+        if (savedUri != Uri.EMPTY) {
+            outState?.putParcelable(URI_KEY, savedUri)
+        }
         super.onSaveInstanceState(outState)
     }
 }

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ImageChooser</string>
+    <string name="open_gallery">Open Gallery</string>
+    <string name="image_from_gallery">Image from gallery</string>
 </resources>
